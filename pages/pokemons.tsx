@@ -2,7 +2,6 @@ import {
   Box,
   CircularProgress,
   Container,
-  Divider,
   Flex,
   Grid,
   GridItem,
@@ -23,21 +22,19 @@ const PAGE_LIMIT = 10;
 
 const Pokemons: FC = () => {
   const router = useRouter();
-  const { page: currentPageString } = useRouterQuery();
-  const currentPage = !isNaN(Number(currentPageString))
-    ? Number(currentPageString)
-    : 1;
+  const { page: currentPage = 1 } = useRouterQuery({
+    parseBooleans: true,
+    parseNumbers: true,
+  });
 
-  const { data, refetch, isInitialLoading } =
-    useGetPaginatedPokemonsQuery(currentPage);
+  const { data, isInitialLoading } = useGetPaginatedPokemonsQuery(currentPage);
 
   const handlePageChange = (page: number) => {
     router.push({ query: { page } }, undefined, { shallow: true });
-    refetch();
   };
 
   return (
-    <Container p="0 2rem" maxWidth="container.xl">
+    <Container p="0 2rem" maxWidth="container.md">
       <Flex
         as="main"
         minHeight="100vh"
@@ -46,40 +43,40 @@ const Pokemons: FC = () => {
         justifyContent="center"
         alignItems="center"
       >
-        <Text as="h1" lineHeight="1.15" fontSize="2rem" margin="0">
+        <Text as="h1" lineHeight="1.15" fontSize="2rem" margin="0" mb="4rem">
           Pokemons
         </Text>
-
-        <Divider margin="2rem 0" />
 
         {isInitialLoading && <CircularProgress />}
 
         {!isInitialLoading && (
-          <Grid templateColumns="repeat(5, 1fr)" gap="4">
-            {data?.pokemons.map((item) => {
-              return (
-                <GridItem key={item.name}>
-                  <Box
-                    border="2px"
-                    padding="4"
-                    _hover={{
-                      borderColor: "blue.400",
-                      textColor: "blue.400",
-                    }}
-                  >
-                    <Text textAlign="center">{item.name}</Text>
-                  </Box>
-                </GridItem>
-              );
-            })}
-          </Grid>
+          <Box width="full">
+            <Grid templateColumns="repeat(5, 1fr)" gap="4">
+              {data?.pokemons.map((item) => {
+                return (
+                  <GridItem key={item.name} w="100%">
+                    <Box
+                      border="2px"
+                      padding="4"
+                      _hover={{
+                        borderColor: "blue.400",
+                        textColor: "blue.400",
+                      }}
+                    >
+                      <Text textAlign="center">{item.name}</Text>
+                    </Box>
+                  </GridItem>
+                );
+              })}
+            </Grid>
+          </Box>
         )}
 
         <Pagination
           page={currentPage}
           limit={PAGE_LIMIT}
           displayCount={3}
-          totalCount={data?.totalPokemons || 0}
+          totalCount={data?.totalPokemons ?? 0}
           onPageChange={handlePageChange}
         />
       </Flex>

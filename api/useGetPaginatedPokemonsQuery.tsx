@@ -3,7 +3,6 @@ import axios, { AxiosError } from "axios";
 import { PokemonList } from "../types/PokemonList";
 
 const PAGE_LIMIT = 10;
-const initialDataUpdatedTimestamp = Date.now();
 
 type ResponseData = {
   pokemons: PokemonList;
